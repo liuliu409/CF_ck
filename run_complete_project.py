@@ -8,8 +8,7 @@ in sequence, passing data between them.
 Usage:
     python run_complete_project.py
 
-Author: Financial Computing Project
-Date: 2024
+
 """
 
 import sys
@@ -246,7 +245,6 @@ print("""
    - Show optimization code from part2_portfolio_optimization.py
    - Explain the transition between Part 1 and Part 2
 
-Good luck with your presentation! 🎓
 """)
 
 print("="*80 + "\n")
