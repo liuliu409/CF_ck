@@ -1,0 +1,16 @@
+# data science libraries
+pandas
+numpy
+matplotlib
+
+# crawling and web interaction
+requests
+beautifulsoup4
+python-dateutil
+schedule
+playwright
+
+# finance support and optimization libraries
+pyqlib
+optuna
+

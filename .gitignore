@@ -1,0 +1,16 @@
+# pycache
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*.pyo
+
+# mlruns
+**/mlruns/
+
+# private file
+data/
+note.txt
+
+tm.py
+03FundamentalAnalysis.ipynb
+test_walk_forward.py
