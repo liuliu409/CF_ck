@@ -23,7 +23,8 @@ from config import (
 from robust_utils import (
     apply_ledoit_wolf, estimate_ic_premium, 
     map_ic_to_returns, winsorize_scores,
-    calculate_quality_factor, calculate_performance_metrics
+    calculate_quality_factor, calculate_performance_metrics,
+    scale_to_matched_volatility
 )
 from part1_multifactor_model import (
     calculate_size_factor, calculate_value_factor, 
@@ -47,7 +48,11 @@ def run_wfa_backtest(all_data: Dict[str, pd.DataFrame]):
     
     portfolio_weights = []
     portfolio_returns = []
+    benchmark_returns = []
     current_weights = np.array([1.0/len(symbols)] * len(symbols)) # Initial: Equal Weighted
+    
+    # Equal Weighted weights for benchmark
+    ew_weights = np.array([1.0/len(symbols)] * len(symbols))
     
     print(f"\nStarting Walk-Forward Analysis ({len(rebalance_dates)} periods)...")
     
@@ -123,10 +128,14 @@ def run_wfa_backtest(all_data: Dict[str, pd.DataFrame]):
         oos_returns = full_returns.loc[t_start:t_end]
         strategy_returns = oos_returns @ opt_weights
         
+        # Benchmark returns (Equal Weighted Buy & Hold)
+        bh_returns = oos_returns @ ew_weights
+        
         # Subtract transaction costs for rebalance
         strategy_returns.iloc[0] -= np.sum(np.abs(opt_weights - current_weights)) * TRANSACTION_COST_MODEL
         
         portfolio_returns.append(strategy_returns)
+        benchmark_returns.append(bh_returns)
         portfolio_weights.append(pd.Series(opt_weights, index=symbols, name=t_start))
         
         print(f"  Period {i+1}/{len(rebalance_dates)-1}: {t_start.date()} to {t_end.date()} | IC: {ic:.3f} | Ret: {strategy_returns.mean()*252:.2%}")
@@ -135,7 +144,10 @@ def run_wfa_backtest(all_data: Dict[str, pd.DataFrame]):
     all_strategy_returns = pd.concat(portfolio_returns)
     all_strategy_returns = all_strategy_returns[~all_strategy_returns.index.duplicated(keep='first')]
     
-    return all_strategy_returns, pd.DataFrame(portfolio_weights)
+    all_benchmark_returns = pd.concat(benchmark_returns)
+    all_benchmark_returns = all_benchmark_returns[~all_benchmark_returns.index.duplicated(keep='first')]
+    
+    return all_strategy_returns, all_benchmark_returns, pd.DataFrame(portfolio_weights)
 
 if __name__ == "__main__":
     from part1_multifactor_model import fetch_all_stocks
@@ -143,17 +155,39 @@ if __name__ == "__main__":
     
     print("Running Robust WFA Verification...")
     data = fetch_all_stocks(VN30_SYMBOLS, START_DATE, END_DATE)
-    strategy_returns, weights_history = run_wfa_backtest(data)
+    strategy_returns, bh_returns, weights_history = run_wfa_backtest(data)
+    
+    # Calculate Risk-Matched (Volatility-Scaled) Benchmark
+    vol_scaled_bh_returns = scale_to_matched_volatility(bh_returns, strategy_returns)
     
     # Save Results
     os.makedirs('output/robust', exist_ok=True)
     strategy_returns.to_csv('output/robust/wfa_returns.csv')
+    bh_returns.to_csv('output/robust/wfa_bh_returns.csv')
+    vol_scaled_bh_returns.to_csv('output/robust/wfa_vol_scaled_bh_returns.csv')
     weights_history.to_csv('output/robust/wfa_weights.csv')
     
+    # Combine benchmarks for easy plotting
+    benchmarks = pd.DataFrame({
+        'Strategy': strategy_returns,
+        'Buy_and_Hold': bh_returns,
+        'Vol_Scaled_B&H': vol_scaled_bh_returns
+    })
+    benchmarks.to_csv('output/robust/wfa_benchmarks_combined.csv')
+    
     print("\n✓ Robust WFA Backtest Completed")
+    
+    print("\n--- Strategy Performance ---")
     metrics = calculate_performance_metrics(strategy_returns, rf_rate=0.02)
-    print(f"Annualized Return: {metrics['ann_return']:.2%}")
-    print(f"Annualized Vol: {metrics['ann_vol']:.2%}")
-    print(f"Sharpe Ratio: {metrics['sharpe']:.2f}")
-    print(f"Max Drawdown: {metrics['max_drawdown']:.2%}")
-    print(f"Calmar Ratio: {metrics['calmar']:.2f}")
+    for k, v in metrics.items():
+        print(f"{k.replace('_', ' ').title()}: {v:.2%}" if 'ratio' not in k and 'sharpe' not in k and 'calmar' not in k else f"{k.replace('_', ' ').title()}: {v:.2f}")
+
+    print("\n--- Buy & Hold Performance ---")
+    bh_metrics = calculate_performance_metrics(bh_returns, rf_rate=0.02)
+    for k, v in bh_metrics.items():
+        print(f"{k.replace('_', ' ').title()}: {v:.2%}" if 'ratio' not in k and 'sharpe' not in k and 'calmar' not in k else f"{k.replace('_', ' ').title()}: {v:.2f}")
+
+    print("\n--- Volatility-Scaled Buy & Hold (Risk-Matched) ---")
+    vs_bh_metrics = calculate_performance_metrics(vol_scaled_bh_returns, rf_rate=0.02)
+    for k, v in vs_bh_metrics.items():
+        print(f"{k.replace('_', ' ').title()}: {v:.2%}" if 'ratio' not in k and 'sharpe' not in k and 'calmar' not in k else f"{k.replace('_', ' ').title()}: {v:.2f}")

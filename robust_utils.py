@@ -182,6 +182,23 @@ def map_ic_to_returns(scores: pd.Series,
     
     return expected_returns
 
+def scale_to_matched_volatility(asset_returns: pd.Series, 
+                                target_returns: pd.Series) -> pd.Series:
+    """
+    Scales a return series to match the annualized volatility of a target series.
+    Logic: Scaled_Returns = Asset_Returns * (Target_Vol / Asset_Vol)
+    
+    Used to create a 'Risk-Matched' benchmark for fair comparison.
+    """
+    asset_vol = asset_returns.std() * np.sqrt(252)
+    target_vol = target_returns.std() * np.sqrt(252)
+    
+    if asset_vol == 0:
+        return asset_returns
+        
+    scale_factor = target_vol / asset_vol
+    return asset_returns * scale_factor
+
 def calculate_performance_metrics(returns: pd.Series, rf_rate: float = 0.02) -> Dict[str, float]:
     """
     Calculate comprehensive performance metrics:

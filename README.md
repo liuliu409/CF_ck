@@ -146,7 +146,23 @@ The following metrics represent the final out-of-sample performance of the **Adv
 
 ---
 
-### **Comparative Overview**
+### **Comparative Overview - Risk-Matched Comparison**
+Below is the head-to-head comparison including the **Risk-Matched Benchmark**. This ensures the strategy is evaluated against a market exposure with equivalent volatility.
+
+| Metric | Advanced WFA | Risk-Matched B&H | Passive B&H (EW) |
+|--------|--------------|------------------|------------------|
+| **Annualized Return** | 20.16% | 23.59% | 26.49% |
+| **Annualized Vol** | **16.87%** | **16.87%** | 18.95% |
+| **Sharpe Ratio** | 1.08 | 1.28 | 1.29 |
+| **Max Drawdown** | **-14.96%** | -16.30% | -18.16% |
+| **Calmar Ratio** | 1.35 | 1.45 | 1.46 |
+
+> [!TIP]
+> **Risk-Match Methodology**: The "Risk-Matched B&H" is the Equal-Weighted VN30 portfolio scaled to match the strategy's target volatility (16.87%). This highlights the **Alpha Engine's superior drawdown protection** even when risk exposure is equalized.
+
+---
+
+### **Legacy Comparisons**
 | Metric | Static Prototype (30stk) | Basic WFA (Robust) | Advanced WFA (Pure Alpha) |
 |--------|--------------------------|-------------------|--------------------------|
 | **Annualized Return** | 16.37% | 13.17% | 20.16% |
@@ -155,7 +171,7 @@ The following metrics represent the final out-of-sample performance of the **Adv
 | **Max Drawdown** | -24.12% | -21.05% | **-14.96%** |
 | **Calmar Ratio** | 0.68 | 0.63 | **1.35** |
 
-*Note: The Advanced WFA (Pure Alpha) model leverages sector-neutralization, Earnings Yield (E/P), and Ledoit-Wolf shrinkage across all 30 assets, yielding a superior 1.08 Sharpe Ratio and resilient risk metrics (1.35 Calmar).*
+*Note: The Advanced WFA (Pure Alpha) model leverages sector-neutralization, Earnings Yield (E/P), and Ledoit-Wolf shrinkage across all 30 assets.*
 
 ## 🎓 Academic Deliverables
 1.  **QUANT_AUDIT.md**: A critical assessment of why the robust model is superior to the static prototype.

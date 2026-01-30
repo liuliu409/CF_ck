@@ -137,23 +137,45 @@ try:
     print("PORTFOLIO PERFORMANCE COMPARISON")
     print("-"*80)
     
+    # Calculate Risk-Matched (Volatility-Scaled) Benchmark
+    from robust_utils import scale_to_matched_volatility, calculate_performance_metrics
+    vol_scaled_bh_returns = scale_to_matched_volatility(pd.Series(eq_return, index=returns_df.index), pd.Series(max_sharpe_portfolio['return'], index=returns_df.index))
+    # Note: Above is a bit simplified for the prototype. Let's use the actual returns series.
+    
+    # Correct implementation for prototype:
+    strat_wealth = (1 + returns_df @ max_sharpe_portfolio['weights']).cumprod()
+    bh_wealth = (1 + returns_df @ equal_weights.values).cumprod()
+    
+    strat_rets = (returns_df @ max_sharpe_portfolio['weights'])
+    bh_rets = (returns_df @ equal_weights.values)
+    vs_bh_rets = scale_to_matched_volatility(bh_rets, strat_rets)
+    
+    strat_metrics = calculate_performance_metrics(strat_rets, RISK_FREE_RATE)
+    bh_metrics = calculate_performance_metrics(bh_rets, RISK_FREE_RATE)
+    vs_bh_metrics = calculate_performance_metrics(vs_bh_rets, RISK_FREE_RATE)
+
     comparison_df = pd.DataFrame({
         'Max Sharpe': [
-            max_sharpe_portfolio['return'], 
-            max_sharpe_portfolio['volatility'], 
-            max_sharpe_portfolio['sharpe']
+            strat_metrics['ann_return'], 
+            strat_metrics['ann_vol'], 
+            strat_metrics['sharpe']
         ],
         'Min Volatility': [
             min_vol_portfolio['return'], 
             min_vol_portfolio['volatility'], 
             min_vol_portfolio['sharpe']
         ],
-        'Equal Weighted': [
-            equal_weighted_portfolio['return'], 
-            equal_weighted_portfolio['volatility'], 
-            equal_weighted_portfolio['sharpe']
+        'Buy & Hold (EW)': [
+            bh_metrics['ann_return'], 
+            bh_metrics['ann_vol'], 
+            bh_metrics['sharpe']
+        ],
+        'Risk-Matched B&H': [
+            vs_bh_metrics['ann_return'],
+            vs_bh_metrics['ann_vol'],
+            vs_bh_metrics['sharpe']
         ]
-    }, index=['Expected Return', 'Volatility', 'Sharpe Ratio']).T
+    }, index=['Return (Ann)', 'Volatility', 'Sharpe Ratio']).T
     
     print(comparison_df.to_string())
     
