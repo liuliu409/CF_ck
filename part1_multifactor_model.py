@@ -7,8 +7,6 @@ This script implements a multi-factor model using:
 2. Value Factor (Price-to-Book or Price-to-Earnings)
 3. Momentum Factor (12-month price momentum)
 
-Author: Financial Computing Project
-Date: 2024
 """
 
 import pandas as pd
@@ -368,7 +366,7 @@ def plot_factor_correlation(factors_df: pd.DataFrame, save_path: str = None):
 # MAIN EXECUTION
 # =============================================================================
 
-def main():
+def main(all_data=None):
     """
     Main execution function for Part 1: Multi-Factor Model
     """
@@ -376,8 +374,9 @@ def main():
     print("PART 1: MULTI-FACTOR MODEL FOR VN30 STOCKS")
     print("="*60 + "\n")
     
-    # Step 1: Fetch data
-    all_data = fetch_all_stocks(VN30_SYMBOLS, START_DATE, END_DATE)
+    # Step 1: Fetch data if not provided
+    if all_data is None:
+        all_data = fetch_all_stocks(VN30_SYMBOLS, START_DATE, END_DATE)
     
     if len(all_data) == 0:
         print("❌ No data fetched. Please check your API key and connection.")

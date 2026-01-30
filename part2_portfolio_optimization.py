@@ -12,8 +12,6 @@ Key Features:
 4. Optimal portfolio weights (Maximum Sharpe Ratio)
 5. Portfolio performance comparison
 
-Author: Financial Computing Project
-Date: 2024
 """
 
 import pandas as pd

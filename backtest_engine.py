@@ -34,6 +34,7 @@ def run_wfa_backtest(all_data: Dict[str, pd.DataFrame]):
     """
     Main loop for Walk-Forward Analysis.
     """
+    symbols = list(all_data.keys())
     # 1. Prepare Returns Data
     returns_dict = {s: df.set_index('date')['close'].pct_change() for s, df in all_data.items()}
     full_returns = pd.DataFrame(returns_dict).dropna()
@@ -46,7 +47,7 @@ def run_wfa_backtest(all_data: Dict[str, pd.DataFrame]):
     
     portfolio_weights = []
     portfolio_returns = []
-    current_weights = np.array([1.0/len(VN30_SYMBOLS)] * len(VN30_SYMBOLS)) # Initial: Equal Weighted
+    current_weights = np.array([1.0/len(symbols)] * len(symbols)) # Initial: Equal Weighted
     
     print(f"\nStarting Walk-Forward Analysis ({len(rebalance_dates)} periods)...")
     
@@ -94,7 +95,7 @@ def run_wfa_backtest(all_data: Dict[str, pd.DataFrame]):
         expected_returns = map_ic_to_returns(scores, asset_vols, ic)
         
         # --- C. CONSTRAINED OPTIMIZATION (t_start) ---
-        n = len(VN30_SYMBOLS)
+        n = len(symbols)
         w = cp.Variable(n)
         
         objective = cp.Maximize(expected_returns.values @ w - 0.5 * cp.quad_form(w, cov_matrix.values))
@@ -126,7 +127,7 @@ def run_wfa_backtest(all_data: Dict[str, pd.DataFrame]):
         strategy_returns.iloc[0] -= np.sum(np.abs(opt_weights - current_weights)) * TRANSACTION_COST_MODEL
         
         portfolio_returns.append(strategy_returns)
-        portfolio_weights.append(pd.Series(opt_weights, index=VN30_SYMBOLS, name=t_start))
+        portfolio_weights.append(pd.Series(opt_weights, index=symbols, name=t_start))
         
         print(f"  Period {i+1}/{len(rebalance_dates)-1}: {t_start.date()} to {t_end.date()} | IC: {ic:.3f} | Ret: {strategy_returns.mean()*252:.2%}")
 
