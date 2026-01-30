@@ -15,7 +15,7 @@
     - Focus on the 30 most liquid and largest-cap stocks on the HOSE.
     - Represents the heartbeat of the Vietnamese emerging economy.
     - Challenges: High retail participation, sector concentration (Banks/Real Estate), and liquidity shifts.
-- **Recommended Visual**: Pie chart showing the sector distribution of the VN30 (Financials, Real Estate, Industrials, etc.).
+- **Recommended Visual**: Pie chart showing the sector distribution of the VN30. *Suggested file: `output/eda_vn30/figures/sector_distribution.png` (if generated) or a manual table of HOSE Sector Weights.*
 
 ## Slide 3: The Problem Statement: Why Static Models Fail
 - **Title**: Beyond Static Models: The Reality of Market Regime Shifts
@@ -39,7 +39,7 @@
     - VN30 returns exhibit high **Kurtosis** (Values > 5.0), signifying extreme outlier frequency.
     - Non-normal distributions make standard variance estimations dangerous.
     - Insight: Individual stock volatility is high (~20-25% annualized), necessitating robust covariance.
-- **Recommended Visual**: A Histogram of VN30 daily returns overlaid with a Normal Distribution curve to highlight the "Fat Tails."
+- **Recommended Visual**: Histogram of VN30 daily returns with Normal curve. *Suggested file: `output/eda_vn30/figures/return_distribution.png` (check `eda_vn30_analysis.py` output) or use `output/eda_vn30/figures/risk_return_scatter.png` to show dispersion.*
 
 ## Slide 6: Data Cleaning: Winsorization & Integrity
 - **Title**: Data Hygiene: Winsorization & Price Reconstruction
@@ -47,7 +47,7 @@
     - **Winsorization**: Capping outliers at 1st and 99th percentiles to prevent signal distortion.
     - Handling "Zero-Volume" days and missing price points via forward-filling logic.
     - Sector-median imputation for missing fundamental ratios (E/P).
-- **Recommended Visual**: "Before vs. After" scatter plot showing how Winsorization pulls extreme outliers back to a manageable range.
+- **Recommended Visual**: "Before vs. After" scatter plot showing outlier clipping. *Suggested file: `output/eda_vn30/figures/winsorization_scatter.png` (Visualizes raw vs. cleaned signal).*
 
 ## Slide 7: Alpha Engine (Part 1): Size & Value Factors
 - **Title**: The Factor Core: Size (Small-Cap) & Value (E/P)
@@ -55,7 +55,7 @@
     - **Size**: Captures the "Small-Cap Premium" within the VN30 universe.
     - **Value (Earnings Yield)**: Uses E/P (LTM) to identify undervalued cash-flow generators.
     - Rationale: E/P is more stable in VN than P/B due to asset revaluation complexities.
-- **Recommended Visual**: A bar chart showing the cross-sectional distribution of Size and Value scores for the current top 5 vs. bottom 5 stocks.
+- **Recommended Visual**: Bar chart of Size/Value scores. *Suggested data: See "Top Factor Picks" table in the visual assets guide. Use `output/figures/factor_rankings.png`.*
 
 ## Slide 8: Alpha Engine (Part 2): Momentum & Quality
 - **Title**: The Factor Core: Momentum & Quality (Low Vol)
@@ -63,7 +63,7 @@
     - **Momentum**: 12-month relative strength (skipping the most recent month to avoid reversal).
     - **Quality**: Low-volatility anomaly; stocks with stable returns often outperform in VN risk-adjusted.
     - Composite Scoring: Z-score normalization enables equal-scale comparison across factors.
-- **Recommended Visual**: A 2x2 grid showing the performance of Top Decile Momentum vs. Low Volatility stocks.
+- **Recommended Visual**: 2x2 Factor Grid. *Suggested file: `output/figures/factor_heatmap.png` or `output/figures/factor_correlation.png`.*
 
 ## Slide 10: Portfolio Construction: The MVO Framework
 - **Title**: Mean-Variance Optimization (MVO)
@@ -71,7 +71,7 @@
     - Objective: Maximize expected return for a targeted level of risk.
     - Dynamic Input: Alpha factor scores mapped to Expected Returns (E[r]).
     - Output: Optimized weights that respect the "Efficient Frontier."
-- **Recommended Visual**: The Efficient Frontier curve, highlighting the "Global Minimum Variance" and "Tangency" portfolios.
+- **Recommended Visual**: Efficient Frontier. *Suggested file: `output/figures/efficient_frontier.png`.*
 
 ## Slide 11: Covariance Stability: Ledoit-Wolf Shrinkage
 - **Title**: Risk Stability: Ledoit-Wolf Shrinkage
@@ -111,7 +111,7 @@
     - **Sharpe Ratio**: 1.08 (vs. 0.64 in the Prototype).
     - **Annualized Return**: 20.16%.
     - **Calmar Ratio**: 1.35; indicating high return per unit of maximum drawdown.
-- **Recommended Visual**: A comparative bar chart showing Metrics (Sharpe, Return, Vol) side-by-side for Prototype vs. Advanced WFA.
+- **Recommended Visual**: Performance Comparison Bars. *Suggested data: See "Performance Summary Table" in the visual assets guide.*
 
 ## Slide 16: Benchmarking: Strategy vs. Equal-Weight
 - **Title**: Benchmarking: Outperforming the VN30 Equal-Weight
@@ -119,7 +119,7 @@
     - Systematic factor tilting consistently beats passive "buy-and-hold."
     - Volatility reduction: Optimized portfolio exhibits smoother equity curves.
     - Information Ratio (IR) highlights the consistency of the Alpha Engine.
-- **Recommended Visual**: Cumulative Equity Curve (Log Scale) comparing the Strategy, VN30 Equal-Weight, and VN-Index.
+- **Recommended Visual**: Cumulative Equity Curve. *Suggested file: `output/figures/portfolio_comparison.png`.*
 
 ## Slide 17: Risk Metrics: Max Drawdown Analysis
 - **Title**: Risk Management: Resilience in Bear Markets
