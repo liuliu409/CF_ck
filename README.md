@@ -37,6 +37,7 @@ This layer transforms alpha signals into optimal weights while enforcing institu
 - **Covariance Estimation**: Ledoit-Wolf shrinkage to reduce estimation error in the risk matrix.
 - **Optimization**: Mean-Variance Optimization (MVO) with L1-norm turnover constraints.
 - **Position Limits**: Individual asset caps (15%) to prevent concentration risk.
+- **Transaction Cost Modeling**: Explicit modeling of brokerage fees and slippage (0.3% per leg) to ensure realistic out-of-sample returns.
 
 ### 3. Execution & Tactical Layer (Technical Control)
 > [!NOTE]
