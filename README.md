@@ -1,9 +1,60 @@
 # VN30 Quantitative Equity Platform
+## A Cross-Sectional Multi-Factor Research Framework
 
-A state-of-the-art quantitative finance framework for VN30 stocks, evolving from a static prototype into a **Robust Walk-Forward Analysis (WFA)** system.
+This platform implements a systematic quantitative research and walk-forward backtesting framework focused on the VN30 universe. It is designed to isolate idiosyncratic alpha through statistical factor modeling and manage portfolio risk via robust optimization.
 
 ![Strategy Equity Curve](output/robust/equity_curve.png)
-*Figure: Strategy Performance - Walk-Forward Equity Curve (Out-of-Sample Results)*
+*Figure 1: Walk-Forward Equity Curve (Out-of-Sample Results)*
+
+---
+
+## 🎯 Research Objective & Scope
+
+The primary objective of this project is to evaluate the existence and persistence of stylized equity factors (Size, Value, Momentum, Quality) within the Vietnamese market (VN30 index). 
+
+- **Target Universe**: VN30 Index (Top 30 largest and most liquid stocks on HOSE).
+- **Time Horizon**: 10-year historical analysis (2016–2026).
+- **Strategy Class**: Systematic, Cross-sectional, Multi-factor Equity.
+- **Methodology**: Walk-Forward Analysis (WFA) with quarterly rebalancing.
+
+---
+
+## 🏛 System Architecture
+
+To ensure conceptual consistency and scientific rigor, the system is architected into three distinct, decoupled layers:
+
+### 1. Alpha Alpha Engine (Statistical Signal Layer)
+The Alpha Engine generates cross-sectional expected return forecasts based on fundamental and statistical anomalies.
+- **Factor Suite**: 
+    - **Size**: Small-cap premium isolated within sectors.
+    - **Value**: High Earnings Yield (E/P) based signals.
+    - **Momentum**: 12-month relative strength (skipping the most recent month).
+    - **Quality**: Low-volatility anomaly.
+- **Statistical Processing**: Winsorization of outliers, sector-neutralization (de-meaning), and Z-score standardization.
+
+### 2. Risk & Portfolio Control Layer
+This layer transforms alpha signals into optimal weights while enforcing institutional-grade constraints.
+- **Covariance Estimation**: Ledoit-Wolf shrinkage to reduce estimation error in the risk matrix.
+- **Optimization**: Mean-Variance Optimization (MVO) with L1-norm turnover constraints.
+- **Position Limits**: Individual asset caps (15%) to prevent concentration risk.
+
+### 3. Execution & Tactical Layer (Technical Control)
+> [!NOTE]
+> **Technical Indicators (EMA, RSI, ATR, MACD)**: In this framework, technical indicators are **not** considered alpha sources. They are housed in the `utils/indicators.py` module and are available for tactical execution logic (e.g., timing entries/exits within a rebalancing window) or as secondary risk-modulation filters.
+
+---
+
+## 📊 Conceptual Framework (What This Is vs. Is Not)
+
+| Aspect | What This Project IS | What This Project IS NOT |
+| :--- | :--- | :--- |
+| **Logic Type** | Statistical & Factor-based | Heuristic or Rule-based |
+| **Alpha Source** | Cross-sectional premiums (Fundamental/Quality) | Technical indicator crossovers (EMA/RSI) |
+| **Portfolio** | Optimized ensemble using Covariance Shrinkage | Ad-hoc selection of "best looking" stocks |
+| **Validation** | Out-of-Sample Walk-Forward Analysis | Simple in-sample backtesting |
+
+---
+
 
 ## 🚀 Major Milestones Achieved
 - [x] **Walk-Forward Analysis (WFA)**: Robust out-of-sample backtesting framework.
@@ -159,6 +210,9 @@ Below is the head-to-head comparison including the **Risk-Matched Benchmark**. T
 
 > [!TIP]
 > **Risk-Match Methodology**: The "Risk-Matched B&H" is the Equal-Weighted VN30 portfolio scaled to match the strategy's target volatility (16.87%). This highlights the **Alpha Engine's superior drawdown protection** even when risk exposure is equalized.
+> > [!TIP]
+> **Methodological Note**: These results are compared against a **Risk-Matched Benchmark** to isolate true manager skill (Alpha) from simple market exposure (Beta). The strategy demonstrates superior drawdown protection even when volatility profiles are equalized.
+
 
 ---
 
